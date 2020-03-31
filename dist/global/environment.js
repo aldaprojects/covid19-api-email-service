@@ -10,4 +10,4 @@ else {
     URL_DB = process.env.MONGO_URI || '';
 }
 process.env.URL_DB = URL_DB;
-console.log(URL_DB);
+console.log('URL_DB', URL_DB);

@@ -11,4 +11,4 @@ if ( process.env.NODE_ENV === 'dev' ) {
 
 process.env.URL_DB = URL_DB;
 
-console.log(URL_DB);
+console.log('URL_DB', URL_DB);
