@@ -15,6 +15,7 @@ const controller = __importStar(require("../controller/country_controller"));
 const __1 = require("..");
 const router = express_1.Router();
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const Views = require('./schema/views');
 router.get('/cases', (req, res) => {
     controller.getLatestCases((err, cases) => {
         if (err) {
@@ -27,9 +28,14 @@ router.get('/cases', (req, res) => {
     });
 });
 router.get('/visitas', (req, res) => {
-    return res.status(200).json({
-        ok: true,
-        visitas: process.env.VISITAS
+    Views.findOne({ about: 'covidpage' }, (err, views) => {
+        if (err) {
+            return res.json({ ok: false, err });
+        }
+        return res.status(200).json({
+            ok: true,
+            views
+        });
     });
 });
 router.post('/soport', (req, res) => {

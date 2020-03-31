@@ -5,6 +5,7 @@ import { sendEmail } from '..';
 
 const router = Router();
 import jwt from 'jsonwebtoken';
+const Views = require('./schema/views');
 
 router.get('/cases', (req: Request, res: Response) => {
     
@@ -21,10 +22,19 @@ router.get('/cases', (req: Request, res: Response) => {
 });
 
 router.get('/visitas', (req: Request, res: Response) => {
-    return res.status(200).json({
-        ok: true,
-        visitas: process.env.VISITAS
-    })
+    
+    Views.findOne( {about: 'covidpage'}, (err: any, views:any ) => {
+        if ( err ) {
+            return res.json({ok: false, err});
+        }
+
+        return res.status(200).json({
+            ok: true,
+            views
+        })
+    });
+
+    
 });
 
 router.post('/soport', (req: Request, res: Response) => {
