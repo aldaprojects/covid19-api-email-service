@@ -52,7 +52,7 @@ const updateDatabase = () => {
     const req = unirest("GET", "https://coronavirus-monitor.p.rapidapi.com/coronavirus/cases_by_country.php");
     req.headers({
         "x-rapidapi-host": "coronavirus-monitor.p.rapidapi.com",
-        "x-rapidapi-key": process.env.API_KEY
+        "x-rapidapi-key": process.env.API_KEY 
     });
 
     req.end((data: any ) => {
