@@ -5,7 +5,7 @@ import { sendEmail } from '..';
 
 const router = Router();
 import jwt from 'jsonwebtoken';
-const Views = require('./schema/views');
+const Views = require('../classes/schema/views');
 
 router.get('/cases', (req: Request, res: Response) => {
     

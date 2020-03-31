@@ -15,7 +15,7 @@ const controller = __importStar(require("../controller/country_controller"));
 const __1 = require("..");
 const router = express_1.Router();
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const Views = require('./schema/views');
+const Views = require('../classes/schema/views');
 router.get('/cases', (req, res) => {
     controller.getLatestCases((err, cases) => {
         if (err) {
