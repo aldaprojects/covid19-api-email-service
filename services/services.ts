@@ -1,0 +1,156 @@
+import * as socket from '../sockets/sockets';
+
+import moment from 'moment-timezone';
+
+const Country = require('../classes/schema/country');
+const Case = require('../classes/schema/cases');
+
+// import unirest from 'unirest';
+
+const unirest = require('unirest');
+
+const futureCases = ( reports: any[], startCases: number ) => {
+    let factor = 0;
+        
+    let start = reports.length-6 < 0 ? 0 : reports.length-6;
+    for ( let k = start; k < reports.length - 1; k++ ) {
+        factor = factor + reports[k+1].cases / reports[k].cases;
+    }
+
+    factor = reports.length === 1 ? 1 : factor / (reports.length-1-start);
+    
+    let nextCases = startCases;
+    let futureCases = [];
+
+    for ( let k = 0; k < 5; k++ ) {
+        nextCases = Math.floor(nextCases * factor);
+        futureCases.push({
+            'cases' : nextCases
+        });
+    }
+
+    return futureCases;
+}
+
+let isNewCases: boolean = false;
+let isNewDeaths: boolean = false;
+let isNewRecovered: boolean = false;
+
+const updateDatabase = () => {
+
+    console.log('Actualizando...');
+    
+    if ( isNewDeaths || isNewCases || isNewRecovered ) {
+        console.log('sockets');
+        socket.updateGlobalCases();
+        socket.updateRanking();
+        socket.updateLatesCases();
+    }
+
+    let actualDay = moment.utc(new Date()).tz('America/Mexico_City');
+    console.log(actualDay.format());
+    const req = unirest("GET", "https://coronavirus-monitor.p.rapidapi.com/coronavirus/cases_by_country.php");
+    req.headers({
+        "x-rapidapi-host": "coronavirus-monitor.p.rapidapi.com",
+        "x-rapidapi-key": process.env.API_KEY
+    });
+
+    req.end((data: any ) => {
+        if ( !data.error ) {
+            
+            let countries: any[] = [];
+            try {
+                countries = JSON.parse(data.body).countries_stat;
+            } catch(e){
+                return;
+            }
+
+            // console.log(countries[0].country_name);
+            // countries[0].cases = "82288";
+
+            Country.find((err: any, countriesDB: any) => {
+
+                isNewCases = false;
+                isNewDeaths = false;
+                isNewRecovered = false;
+
+
+                if ( !err ) {
+                    for ( let i = 0; i < countries.length; i++ ) {
+                        for ( let j = 0; j < countriesDB.length; j++ ) {
+                            let isNewCasesB = false;
+                            let isNewDeathsB = false;
+                            let isNewRecoveredB = false;
+                            if ( countries[i].country_name === countriesDB[j].country_name ) {
+                                let newCases = Number.parseInt(countries[i].cases.replace(/,/g, ''));
+                                let newDeaths = Number.parseInt(countries[i].deaths.replace(/,/g, ''));
+                                let newRecovered = Number.parseInt(countries[i].total_recovered.replace(/,/g, ''));
+                                if ( countriesDB[j].deaths != newDeaths ){
+                                    isNewDeathsB = true;                                
+                                    isNewDeaths = true;
+                                    console.log(countriesDB[j].country_name);
+                                    console.log('new Deaths');
+                                    console.log(countriesDB[j].deaths, newDeaths);
+                                    countriesDB[j].deaths = newDeaths;
+                                }
+                                if ( countriesDB[j].total_recovered != newRecovered ) {
+                                    isNewRecoveredB = true;
+                                    isNewRecovered = true;
+                                    console.log(countriesDB[j].country_name);
+                                    console.log('new Recovered');
+                                    console.log(countriesDB[j].total_recovered, newRecovered);
+                                    countriesDB[j].total_recovered = newRecovered;
+                                }
+                                if ( countriesDB[j].cases != newCases ) {
+                                    isNewCasesB = true;
+                                    isNewCases = true;
+
+                                    let actualDay = moment.utc(new Date()).tz('America/Mexico_City');
+
+                                    const newCase = new Case({
+                                        country_name: countriesDB[j].country_name,
+                                        new_cases: newCases - countriesDB[j].cases,
+                                        total_cases: newCases,
+                                        date: actualDay.format()
+                                    });
+
+                                    newCase.save();
+    
+                                    let reports = countriesDB[j].last_updates;
+                                    let size = reports.length;
+
+                                    let dateDB = reports[size-1].day;
+                                    let dayNow = new Date().getDate();
+    
+                                    if ( dateDB === dayNow ) {
+                                        reports.pop();
+                                    }
+    
+                                    reports.push({
+                                        'country_name' : countries[i].country_name,
+                                        'day' : dayNow,
+                                        'cases' : newCases
+                                    });
+    
+                                    countriesDB[j].future_cases = futureCases(reports, newCases);
+                                    console.log(countriesDB[j].country_name);
+                                    console.log('new Cases');
+                                    console.log(countriesDB[j].cases, newCases);
+    
+                                    countriesDB[j].cases = newCases;
+
+                                }
+                                if ( isNewCasesB || isNewDeathsB || isNewRecoveredB ) {
+                                    countriesDB[j].save();
+                                } 
+                                countriesDB.splice(j, 1);
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    });
+}
+
+export default updateDatabase;
