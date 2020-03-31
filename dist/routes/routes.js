@@ -6,19 +6,15 @@ var __importStar = (this && this.__importStar) || function (mod) {
     result["default"] = mod;
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const controller = __importStar(require("../controller/country_controller"));
+const __1 = require("..");
 const router = express_1.Router();
-const nodemailer = require('nodemailer');
-const jwt = require('jsonwebtoken');
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: 'noreply.covidreports@gmail.com',
-        pass: 'covidreports11'
-    }
-});
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 router.get('/cases', (req, res) => {
     controller.getLatestCases((err, cases) => {
         if (err) {
@@ -40,7 +36,7 @@ router.post('/soport', (req, res) => {
     const email = req.body.email;
     const msg = req.body.msg;
     let msgconfig = configEmail(email, msg);
-    sendEmail(msgconfig);
+    __1.sendEmail(msgconfig);
     return res.status(200).json({
         ok: true
     });
@@ -108,7 +104,7 @@ router.post('/subscription', (req, res) => {
 });
 router.post('/subscription/cancel', (req, res) => {
     let token = req.body.token;
-    jwt.verify(token, 'seed', (err, decoded) => {
+    jsonwebtoken_1.default.verify(token, 'seed', (err, decoded) => {
         if (err) {
             return res.json({ ok: false, err });
         }
@@ -146,23 +142,13 @@ router.get('/global', (req, res) => {
 });
 function configEmail(email, msg) {
     const mailOptions = {
-        from: 'noreply.sectec@gmail.com',
+        from: process.env.EMAIL,
         to: 'aldaprojects@hotmail.com',
-        subject: `NEW REPORT ABOUT SOPORT FROM ${email}`,
+        subject: `Soporte para ${email}`,
         html: `
            <p> ${msg} </p>
         `
     };
     return mailOptions;
-}
-function sendEmail(mailOptions) {
-    transporter.sendMail(mailOptions, function (error, info) {
-        if (error) {
-            console.log(error);
-        }
-        else {
-            console.log('Email sent: ' + info.response);
-        }
-    });
 }
 exports.default = router;

@@ -12,8 +12,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const server_1 = __importDefault(require("../classes/server"));
 const controller = __importStar(require("../controller/country_controller"));
+const __1 = require("..");
 const server = server_1.default.instance;
-const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
 exports.updateRanking = () => {
     controller.getAllCountries((err, countries) => {
@@ -43,24 +43,17 @@ exports.updateOneCountry = (newCase) => {
             let subscriptions = country.subscriptions;
             for (let i = 0; i < subscriptions.length; i++) {
                 let mailOptions = configEmail(newCase.country_name, subscriptions[i], newCase);
-                sendEmail(mailOptions);
+                __1.sendEmail(mailOptions);
             }
             server.io.emit(`country${newCase.country_name}`, country);
         }
     });
 };
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: 'noreply.covidreports@gmail.com',
-        pass: 'covidreports11'
-    }
-});
 function configEmail(country, email, newCase) {
-    const token = jwt.sign({ country, email }, 'seed', { expiresIn: '1year' });
+    const token = jwt.sign({ country, email }, process.env.SEED, { expiresIn: '1year' });
     const url = `https://covid19-reportes.herokuapp.com/#/unsubscribe/${token}`;
     const mailOptions = {
-        from: 'noreply.sectec@gmail.com',
+        from: process.env.EMAIL,
         to: email,
         subject: `Reporte de nuevos casos sobre COVID-19 para ${country}`,
         html: `
@@ -72,14 +65,4 @@ function configEmail(country, email, newCase) {
         `
     };
     return mailOptions;
-}
-function sendEmail(mailOptions) {
-    transporter.sendMail(mailOptions, function (error, info) {
-        if (error) {
-            console.log(error);
-        }
-        else {
-            console.log('Email sent: ' + info.response);
-        }
-    });
 }

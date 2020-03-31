@@ -10,14 +10,33 @@ const cors_1 = __importDefault(require("cors"));
 const mongo_1 = __importDefault(require("./classes/mongo"));
 const server = server_1.default.instance;
 const services_1 = __importDefault(require("./services/services"));
-const environment_1 = require("./global/environment");
+const nodemailer_1 = __importDefault(require("nodemailer"));
+const transporter = nodemailer_1.default.createTransport({
+    service: 'gmail',
+    auth: {
+        user: process.env.EMAIL,
+        pass: process.env.PASSWORD
+    }
+});
+function sendEmail(mailOptions) {
+    transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+            console.log(error);
+        }
+        else {
+            console.log('Email sent: ' + info.response);
+        }
+    });
+}
+exports.sendEmail = sendEmail;
+;
 // BodyParser
 server.app.use(body_parser_1.default.urlencoded({ extended: true }));
 server.app.use(body_parser_1.default.json());
 // CORS
 server.app.use(cors_1.default({ origin: true, credentials: true }));
 // connect bd
-mongo_1.default.connect(environment_1.URL_DB);
+mongo_1.default.connect(process.env.URL_DB || '');
 setInterval(services_1.default, 3000);
 // Rutas
 server.app.use('/', routes_1.default);

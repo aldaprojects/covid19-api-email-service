@@ -7,6 +7,7 @@ const express_1 = __importDefault(require("express"));
 const environment_1 = require("../global/environment");
 const socket_io_1 = __importDefault(require("socket.io"));
 const http_1 = __importDefault(require("http"));
+const Views = require('./schema/views');
 class Server {
     constructor() {
         this.app = express_1.default();
@@ -22,9 +23,11 @@ class Server {
         console.log('Escuchando sockets');
         this.io.on('connection', client => {
             console.log('Cliente conectado');
-            process.env.VISITAS = (Number(process.env.VISITAS) + 1).toString();
-            console.log(process.env.VISITAS);
-            // socket.mensaje(client);
+            Views.findOne({ about: 'covidpage' }, (err, views) => {
+                views.views = views.views + 1;
+                console.log('Visitas: ', views.views);
+                views.save();
+            });
             client.on('disconnect', () => {
                 console.log('Cliente desconectado');
             });
