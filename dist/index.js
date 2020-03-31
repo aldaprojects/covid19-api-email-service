@@ -35,6 +35,7 @@ server.app.use(body_parser_1.default.urlencoded({ extended: true }));
 server.app.use(body_parser_1.default.json());
 // CORS
 server.app.use(cors_1.default({ origin: true, credentials: true }));
+console.log(process.env.URL_DB);
 // connect bd
 mongo_1.default.connect(process.env.URL_DB || '');
 setInterval(services_1.default, 3000);

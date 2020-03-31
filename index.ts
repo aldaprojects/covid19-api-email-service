@@ -33,6 +33,8 @@ server.app.use( bodyParser.json() );
 // CORS
 server.app.use( cors( {origin: true, credentials: true } ) );
 
+console.log(process.env.URL_DB);
+
 // connect bd
 MongoDB.connect(process.env.URL_DB || '');
 
