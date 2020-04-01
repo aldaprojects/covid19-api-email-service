@@ -39,12 +39,12 @@ let isNewReport = false;
 
 const updateDatabase = () => {
 
-    // if ( isNewReport ) {
-    //     console.log('sockets');
-    //     socket.updateGlobalCases();
-    //     socket.updateRanking();
-    //     socket.updateLatesCases();
-    // }
+    if ( isNewReport ) {
+        console.log('Uso de sockets');
+        socket.updateGlobalCases();
+        socket.updateRanking();
+        socket.updateLatesCases();
+    }
 
     isNewReport = false;
 
@@ -71,7 +71,7 @@ const updateDatabase = () => {
             // console.log(countries[0].country_name);
             // countries[0].cases = "188540";
             // countries[0].deaths = "3905";
-            countries[0].total_recovered = "3905";
+            // countries[0].total_recovered = "3905";
  
             Country.find((err: any, countriesDB: any) => {
 

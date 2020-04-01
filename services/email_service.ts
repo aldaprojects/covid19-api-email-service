@@ -1,6 +1,7 @@
 import { EMAIL_LIST } from "../global/environment";
 import jwt from 'jsonwebtoken';
 import { sendEmail } from '../index';
+import { updateOneCountry } from "../sockets/sockets";
 
 const sendPendingEmails = () => {
     console.log('Pending emails:', EMAIL_LIST.length);
@@ -13,6 +14,7 @@ const sendPendingEmails = () => {
         let tittle: string = '';
         
         if ( EMAIL_LIST[0].newUpdate.new_cases ) {
+            updateOneCountry( EMAIL_LIST[0].newUpdate.country_name );
             tittle = 'nuevos casos';
             body = 
             `

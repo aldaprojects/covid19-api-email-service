@@ -23,15 +23,14 @@ export const updateLatesCases = () => {
     controller.getLatestCases((err: any, cases: any) => {
         if ( !err) {
             server.io.emit('latestCases', cases);
-            updateOneCountry(cases[0]);
         }
     })
 }
 
-export const updateOneCountry = (newCase: any) => {
-    controller.getOneCountry(newCase.country_name, (err: any, country: any) => {
+export const updateOneCountry = (countryName: any) => {
+    controller.getOneCountry(countryName, (err: any, country: any) => {
         if ( !err) {
-            server.io.emit(`country${newCase.country_name}`, country);
+            server.io.emit(`country${countryName}`, country);
         }
     });
 }
