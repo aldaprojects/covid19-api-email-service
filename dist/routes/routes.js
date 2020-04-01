@@ -28,7 +28,7 @@ router.get('/cases', (req, res) => {
     });
 });
 router.get('/visitas', (req, res) => {
-    Utils.findOne({ about: 'covidpage' }, (err, views) => {
+    Utils.findOne({ about: 'covidcases' }, (err, views) => {
         if (err) {
             return res.json({ ok: false, err });
         }
