@@ -31,14 +31,13 @@ exports.updateLatesCases = () => {
     controller.getLatestCases((err, cases) => {
         if (!err) {
             server.io.emit('latestCases', cases);
-            exports.updateOneCountry(cases[0]);
         }
     });
 };
-exports.updateOneCountry = (newCase) => {
-    controller.getOneCountry(newCase.country_name, (err, country) => {
+exports.updateOneCountry = (countryName) => {
+    controller.getOneCountry(countryName, (err, country) => {
         if (!err) {
-            server.io.emit(`country${newCase.country_name}`, country);
+            server.io.emit(`country${countryName}`, country);
         }
     });
 };

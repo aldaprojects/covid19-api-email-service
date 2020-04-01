@@ -11,4 +11,5 @@ else {
 }
 process.env.URL_DB = URL_DB;
 exports.EMAIL_LIST = [];
+exports.COUNTRY_LIST = [];
 console.log('URL_DB', URL_DB);

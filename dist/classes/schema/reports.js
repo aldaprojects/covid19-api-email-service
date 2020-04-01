@@ -15,7 +15,7 @@ let reportSchema = new Schema({
     total_recovered: { type: Number },
     day: { type: Number },
     date: { type: Date },
-    labelGraphicDate: { type: String },
+    labelReportsDate: { type: String },
     labelDate: { type: String }
 });
 module.exports = mongoose_1.default.model('report', reportSchema);

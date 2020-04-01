@@ -10,6 +10,7 @@ const Report = require('../classes/schema/reports');
 const environment_1 = require("../global/environment");
 const unirest = require('unirest');
 const futureCases = (reports, startCases, actualDay) => {
+    let startDay = moment_timezone_1.default.utc(actualDay.format()).tz('America/Mexico_City');
     let factor = 0;
     let start = reports.length - 6 < 0 ? 0 : reports.length - 6;
     for (let k = start; k < reports.length - 1; k++) {
@@ -19,26 +20,18 @@ const futureCases = (reports, startCases, actualDay) => {
     let nextCases = startCases;
     let futureCases = [];
     for (let k = 0; k < 5; k++) {
-        actualDay.add(1, 'days');
+        startDay.add(1, 'days');
         nextCases = Math.floor(nextCases * factor);
         futureCases.push({
             'cases': nextCases,
-            'date': actualDay.format('DD/MM/YYYY')
+            'date': startDay.format('DD/MM/YYYY')
         });
     }
     return futureCases;
 };
-let isNewReport = false;
 const updateDatabase = () => {
-    // if ( isNewReport ) {
-    //     console.log('sockets');
-    //     socket.updateGlobalCases();
-    //     socket.updateRanking();
-    //     socket.updateLatesCases();
-    // }
-    isNewReport = false;
     let actualDay = moment_timezone_1.default.utc(new Date()).tz('America/Mexico_City');
-    console.log('Actualizando...', actualDay.format('DD/MM/YYYY LTS'));
+    console.log('Updating database...', actualDay.format('DD/MM/YYYY LTS'));
     const req = unirest("GET", "https://coronavirus-monitor.p.rapidapi.com/coronavirus/cases_by_country.php");
     req.headers({
         "x-rapidapi-host": "coronavirus-monitor.p.rapidapi.com",
@@ -54,9 +47,9 @@ const updateDatabase = () => {
                 return;
             }
             // console.log(countries[0].country_name);
-            // countries[0].cases = "188540";
-            // countries[0].deaths = "3905";
-            countries[0].total_recovered = "3905";
+            // countries[0].cases = "123456";
+            // countries[0].deaths = "123456";
+            // countries[0].total_recovered = "123456";
             Country.find((err, countriesDB) => {
                 if (!err) {
                     for (let i = 0; i < countries.length; i++) {
@@ -70,15 +63,14 @@ const updateDatabase = () => {
                                     console.log(countries[i].country_name);
                                     console.log('newCases', newCases);
                                     const totalCases = newCases + countriesDB[j].cases;
-                                    const todayDate = new Date().getDate();
                                     const newReport = {
                                         country_name: countriesDB[j].country_name,
-                                        labelDate: actualDay.format('DD/MM/YYYY LTS'),
+                                        labelDate: actualDay.format('DD/MM/YYYY'),
                                         date: actualDay.format(),
                                         new_cases: newCases,
                                         total_cases: totalCases,
                                         day: actualDay.date(),
-                                        labelGraphicDate: actualDay.format('DD/MM/YYYY')
+                                        labelReportsDate: actualDay.format('DD/MM/YYYY LTS')
                                     };
                                     const newUpdate = new Report(newReport);
                                     newUpdate.save();
@@ -88,7 +80,7 @@ const updateDatabase = () => {
                                             email: subscriptions[i],
                                         });
                                     }
-                                    if (countriesDB[j].last_updates[countriesDB[j].last_updates.length - 1].day === todayDate) {
+                                    if (countriesDB[j].last_updates[countriesDB[j].last_updates.length - 1].day === actualDay.date()) {
                                         countriesDB[j].last_updates.pop();
                                     }
                                     countriesDB[j].last_updates.push(newReport);
@@ -99,10 +91,11 @@ const updateDatabase = () => {
                                     console.log('newDeaths', newDeaths);
                                     const newUpdate = new Report({
                                         country_name: countriesDB[j].country_name,
-                                        labelDate: actualDay.format('DD/MM/YYYY  LTS'),
+                                        labelDate: actualDay.format('DD/MM/YYYY'),
                                         new_deaths: newDeaths,
                                         date: actualDay.format(),
-                                        total_deaths: newDeaths + countriesDB[j].deaths
+                                        total_deaths: newDeaths + countriesDB[j].deaths,
+                                        labelReportsDate: actualDay.format('DD/MM/YYYY LTS')
                                     });
                                     newUpdate.save();
                                     for (let i = 0; i < subscriptions.length; i++) {
@@ -117,10 +110,11 @@ const updateDatabase = () => {
                                     console.log('newRecovered', newRecovered);
                                     const newUpdate = new Report({
                                         country_name: countriesDB[j].country_name,
-                                        labelDate: actualDay.format('DD/MM/YYYY LTS'),
+                                        labelDate: actualDay.format('DD/MM/YYYY'),
                                         date: actualDay.format(),
                                         new_recovered: newRecovered,
-                                        total_recovered: newRecovered + countriesDB[j].total_recovered
+                                        total_recovered: newRecovered + countriesDB[j].total_recovered,
+                                        labelReportsDate: actualDay.format('DD/MM/YYYY LTS')
                                     });
                                     newUpdate.save();
                                     for (let i = 0; i < subscriptions.length; i++) {
@@ -131,11 +125,11 @@ const updateDatabase = () => {
                                     }
                                 }
                                 if (newCases != 0 || newDeaths != 0 || newRecovered != 0) {
-                                    isNewReport = true;
                                     countriesDB[j].cases += newCases;
                                     countriesDB[j].deaths += newDeaths;
                                     countriesDB[j].total_recovered += newRecovered;
                                     countriesDB[j].save();
+                                    environment_1.COUNTRY_LIST.push(countriesDB[j].country_name);
                                 }
                                 countriesDB.splice(j, 1);
                             }

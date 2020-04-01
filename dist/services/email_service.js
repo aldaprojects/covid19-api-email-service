@@ -6,14 +6,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const environment_1 = require("../global/environment");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const index_1 = require("../index");
+const sockets_1 = require("../sockets/sockets");
 const sendPendingEmails = () => {
-    console.log('Pending emails:', environment_1.EMAIL_LIST.length);
     if (environment_1.EMAIL_LIST.length > 0) {
+        console.log('Pending emails:', environment_1.EMAIL_LIST.length);
         let countryName = environment_1.EMAIL_LIST[0].newUpdate.country_name;
         let date = environment_1.EMAIL_LIST[0].newUpdate.date;
         let body = '';
         let tittle = '';
         if (environment_1.EMAIL_LIST[0].newUpdate.new_cases) {
+            sockets_1.updateOneCountry(environment_1.EMAIL_LIST[0].newUpdate.country_name);
             tittle = 'nuevos casos';
             body =
                 `

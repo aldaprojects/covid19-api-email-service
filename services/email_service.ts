@@ -4,9 +4,9 @@ import { sendEmail } from '../index';
 import { updateOneCountry } from "../sockets/sockets";
 
 const sendPendingEmails = () => {
-    console.log('Pending emails:', EMAIL_LIST.length);
     if ( EMAIL_LIST.length > 0 ) {
-
+        console.log('Pending emails:', EMAIL_LIST.length);
+        
         let countryName = EMAIL_LIST[0].newUpdate.country_name;
         let date = EMAIL_LIST[0].newUpdate.date;
 
