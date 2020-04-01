@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const Country = require('../classes/schema/country');
 const Report = require('../classes/schema/reports');
+const Utils = require('../classes/schema/utils');
 exports.getAllCountries = (callback) => {
     Country.find({}, 'country_name ranking cases')
         .sort({ 'cases': -1 })
@@ -39,4 +40,7 @@ exports.getGlobalCases = (callback) => {
 };
 exports.getOneCountry = (name, callback) => {
     Country.findOne({ 'country_name': name }, callback);
+};
+exports.getViews = (callback) => {
+    Utils.findOne({ about: 'covidcases' }, callback);
 };

@@ -15,7 +15,6 @@ const controller = __importStar(require("../utils/country_controller"));
 const __1 = require("..");
 const router = express_1.Router();
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const Utils = require('../classes/schema/utils');
 router.get('/cases', (req, res) => {
     controller.getLatestCases((err, cases) => {
         if (err) {
@@ -28,13 +27,13 @@ router.get('/cases', (req, res) => {
     });
 });
 router.get('/visitas', (req, res) => {
-    Utils.findOne({ about: 'covidcases' }, (err, views) => {
+    controller.getViews((err, views) => {
         if (err) {
             return res.json({ ok: false, err });
         }
         return res.status(200).json({
             ok: true,
-            views
+            views: views.data.views
         });
     });
 });

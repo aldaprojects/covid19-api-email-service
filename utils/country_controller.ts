@@ -1,5 +1,6 @@
 const Country = require('../classes/schema/country');
 const Report = require('../classes/schema/reports');
+const Utils = require('../classes/schema/utils');
 
 export const getAllCountries = (callback: Function) => {
     Country.find({}, 'country_name ranking cases')
@@ -42,5 +43,9 @@ export const getGlobalCases = (callback: Function) => {
 
 export const getOneCountry = ( name: string, callback: Function) => {
     Country.findOne({'country_name' : name }, callback);
+}
+
+export const getViews = ( callback: Function ) => {
+    Utils.findOne({ about: 'covidcases' }, callback);
 }
 
