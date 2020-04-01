@@ -1,11 +1,11 @@
 import { Router, Request, Response } from 'express';
 
-import * as controller from '../controller/country_controller';
+import * as controller from '../utils/country_controller';
 import { sendEmail } from '..';
 
 const router = Router();
 import jwt from 'jsonwebtoken';
-const Views = require('../classes/schema/views');
+const Utils = require('../classes/schema/utils');
 
 router.get('/cases', (req: Request, res: Response) => {
     
@@ -23,7 +23,7 @@ router.get('/cases', (req: Request, res: Response) => {
 
 router.get('/visitas', (req: Request, res: Response) => {
     
-    Views.findOne( {about: 'covidpage'}, (err: any, views:any ) => {
+    Utils.findOne( {about: 'covidpage'}, (err: any, views:any ) => {
         if ( err ) {
             return res.json({ok: false, err});
         }
@@ -96,7 +96,7 @@ router.get('/country', (req: Request, res: Response) => {
 
 router.post('/subscription', (req: Request, res: Response) => {
     let email = req.body.email;
-    let country = req.body.country;
+    let country = req.query.country;
     
     controller.getOneCountry(country, (err: any, country: any) => {
         if ( err ) {

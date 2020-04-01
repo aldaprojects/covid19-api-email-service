@@ -11,6 +11,7 @@ const mongo_1 = __importDefault(require("./classes/mongo"));
 const server = server_1.default.instance;
 const services_1 = __importDefault(require("./services/services"));
 const nodemailer_1 = __importDefault(require("nodemailer"));
+const email_service_1 = __importDefault(require("./services/email_service"));
 const transporter = nodemailer_1.default.createTransport({
     service: 'gmail',
     auth: {
@@ -38,7 +39,8 @@ server.app.use(cors_1.default({ origin: true, credentials: true }));
 console.log(process.env.URL_DB);
 // connect bd
 mongo_1.default.connect(process.env.URL_DB || '');
-setInterval(services_1.default, 3000);
+setInterval(services_1.default, 4000);
+setInterval(email_service_1.default, 2000);
 // Rutas
 server.app.use('/', routes_1.default);
 server.start(() => {

@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const Country = require('../classes/schema/country');
 const Case = require('../classes/schema/cases');
+const Utils = require('../classes/schema/utils');
 exports.getAllCountries = (callback) => {
     Country.find({}, 'country_name ranking cases')
         .sort({ 'cases': -1 })
@@ -39,4 +40,20 @@ exports.getGlobalCases = (callback) => {
 };
 exports.getOneCountry = (name, callback) => {
     Country.findOne({ 'country_name': name }, callback);
+};
+exports.updateDBGlobalData = (newCases, newDeaths, newRecovered) => {
+    Utils.findOne({ about: 'global' }, (err, global) => {
+        global.data.total_cases += newCases;
+        global.data.total_deaths += newDeaths;
+        global.data.total_recovered += newRecovered;
+        global.save();
+    });
+};
+exports.updateDBOneCountry = (newCases, newDeaths, newRecovered, countryName) => {
+    Country.findOne({ country_name: countryName }, (err, country) => {
+        country.cases += newCases;
+        country.deaths += newDeaths;
+        country.total_recovered += newRecovered;
+        country.save();
+    });
 };

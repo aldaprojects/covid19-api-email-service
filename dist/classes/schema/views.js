@@ -5,8 +5,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
 let Schema = mongoose_1.default.Schema;
-let viewsSchema = new Schema({
-    about: { type: String, default: 'covidpage' },
-    views: { type: Number, default: 0 },
-}, { collection: 'views' });
-module.exports = mongoose_1.default.model('view', viewsSchema);
+let utilsSchema = new Schema({
+    about: { type: String },
+    data: { type: Number || Object },
+}, { collection: 'utils' });
+module.exports = mongoose_1.default.model('utils', utilsSchema);

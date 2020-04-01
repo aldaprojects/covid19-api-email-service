@@ -11,11 +11,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-const controller = __importStar(require("../controller/country_controller"));
+const controller = __importStar(require("../utils/country_controller"));
 const __1 = require("..");
 const router = express_1.Router();
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const Views = require('../classes/schema/views');
+const Utils = require('../classes/schema/utils');
 router.get('/cases', (req, res) => {
     controller.getLatestCases((err, cases) => {
         if (err) {
@@ -28,7 +28,7 @@ router.get('/cases', (req, res) => {
     });
 });
 router.get('/visitas', (req, res) => {
-    Views.findOne({ about: 'covidpage' }, (err, views) => {
+    Utils.findOne({ about: 'covidpage' }, (err, views) => {
         if (err) {
             return res.json({ ok: false, err });
         }
@@ -83,7 +83,7 @@ router.get('/country', (req, res) => {
 });
 router.post('/subscription', (req, res) => {
     let email = req.body.email;
-    let country = req.body.country;
+    let country = req.query.country;
     controller.getOneCountry(country, (err, country) => {
         if (err) {
             return res.json({ ok: false, err });

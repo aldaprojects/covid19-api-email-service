@@ -7,7 +7,7 @@ const express_1 = __importDefault(require("express"));
 const environment_1 = require("../global/environment");
 const socket_io_1 = __importDefault(require("socket.io"));
 const http_1 = __importDefault(require("http"));
-const Views = require('./schema/views');
+const Utils = require('./schema/utils');
 class Server {
     constructor() {
         this.app = express_1.default();
@@ -23,9 +23,12 @@ class Server {
         console.log('Escuchando sockets');
         this.io.on('connection', client => {
             console.log('Cliente conectado');
-            Views.findOne({ about: 'covidpage' }, (err, views) => {
-                views.views = views.views + 1;
-                console.log('Visitas: ', views.views);
+            Utils.findOne({ about: 'covidcases' }, (err, views) => {
+                let newData = {
+                    views: views.data.views + 1
+                };
+                views.data = newData;
+                console.log('Visitas: ', views.data.views);
                 views.save();
             });
             client.on('disconnect', () => {

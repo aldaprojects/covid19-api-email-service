@@ -11,5 +11,7 @@ if ( process.env.NODE_ENV === 'dev' ) {
 
 process.env.URL_DB = URL_DB;
 
+export const EMAIL_LIST: any[] = [];
+
 console.log('URL_DB', URL_DB);
 

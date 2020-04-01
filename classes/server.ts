@@ -3,7 +3,7 @@ import { SERVER_PORT } from '../global/environment';
 import socketIO from 'socket.io';
 import http from 'http';
 
-const Views = require('./schema/views');
+const Utils = require('./schema/utils');
 
 export default class Server {
 
@@ -35,10 +35,14 @@ export default class Server {
         this.io.on('connection', client => {
             console.log('Cliente conectado');
 
-            Views.findOne({ about: 'covidpage' }, (err: any, views: any ) =>{
-                views.views = views.views + 1;
-                console.log('Visitas: ', views.views);
-                views.save();
+            Utils.findOne({ about: 'covidcases' }, (err: any, views: any ) =>{
+
+                let newData = {
+                    views: views.data.views + 1
+                }
+                views.data = newData;
+                console.log('Visitas: ', views.data.views);
+                views.save();  
             });
     
             client.on('disconnect', () => {

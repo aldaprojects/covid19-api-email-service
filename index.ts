@@ -7,6 +7,7 @@ import MongoDB from './classes/mongo';
 const server = Server.instance;
 import updateDatabase from './services/services';
 import nodemailer from 'nodemailer';
+import sendPendingEmails from './services/email_service';
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -38,7 +39,8 @@ console.log(process.env.URL_DB);
 // connect bd
 MongoDB.connect(process.env.URL_DB || '');
 
-setInterval(updateDatabase, 3000);
+setInterval(updateDatabase, 4000);
+setInterval(sendPendingEmails, 2000);
 
 // Rutas
 server.app.use('/', router);

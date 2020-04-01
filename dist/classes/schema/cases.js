@@ -8,7 +8,11 @@ let Schema = mongoose_1.default.Schema;
 let caseSchema = new Schema({
     country_name: { type: String },
     new_cases: { type: Number },
+    new_deaths: { type: Number },
+    new_recovered: { type: Number },
     total_cases: { type: Number },
-    date: { type: Date },
+    total_deaths: { type: Number },
+    total_recovered: { type: Number },
+    date: { type: String },
 });
 module.exports = mongoose_1.default.model('case', caseSchema);
