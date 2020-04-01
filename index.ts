@@ -8,7 +8,7 @@ const server = Server.instance;
 import updateDatabase from './services/services';
 import nodemailer from 'nodemailer';
 import sendPendingEmails from './services/email_service';
-import emitSockets from './services/country_service';
+import emitSockets from './services/socket_service';
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',

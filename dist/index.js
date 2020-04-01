@@ -12,7 +12,7 @@ const server = server_1.default.instance;
 const services_1 = __importDefault(require("./services/services"));
 const nodemailer_1 = __importDefault(require("nodemailer"));
 const email_service_1 = __importDefault(require("./services/email_service"));
-const country_service_1 = __importDefault(require("./services/country_service"));
+const socket_service_1 = __importDefault(require("./services/socket_service"));
 const transporter = nodemailer_1.default.createTransport({
     service: 'gmail',
     auth: {
@@ -42,7 +42,7 @@ console.log(process.env.URL_DB);
 mongo_1.default.connect(process.env.URL_DB || '');
 setInterval(services_1.default, 4000);
 setInterval(email_service_1.default, 2000);
-setInterval(country_service_1.default, 200);
+setInterval(socket_service_1.default, 200);
 // Rutas
 server.app.use('/', routes_1.default);
 server.start(() => {
