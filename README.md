@@ -1,10 +1,9 @@
-No olvidar ejecutar
-```
-npm install
-```
+### REST API built with NodeJS to send emails to users subscribed to a country
+
+This REST API sends email for users who are subscribed to a country. Each time a new report appears, like new case, new death or new recovered, it sends an email for users subscribed
 
 
-Configurar variables de entorno antes de usar
+config environment variables 
 ```
 process.env.SEED
 process.env.EMAIL
